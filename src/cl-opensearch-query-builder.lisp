@@ -2,27 +2,53 @@
 
 (in-package :cl-opensearch-query-builder)
 
+(defparameter *initial-query* "")
+(defparameter *initial-index* "")
+(defparameter *initial-sort* "")
+(defparameter *initial-from* 0)
+(defparameter *initial-size* 10)
+(defparameter *initial-match-all* t)
+(defparameter *initial-minimum-should-match* 0)
+
 (defclass opensearch-query-builder ()
   "A class for building OpenSearch queries."
   ((query
     :accessor query
     :initarg :query
-    :initform "")
+    :initform *initial-query*)
    (index
     :accessor index
     :initarg :index
-    :initform "")
-   (type
-    :accessor type
-    :initarg :type
-    :initform "")))
+    :initform *initial-index*)
+   (sort
+    :accessor sort
+    :initarg :sort
+    :initform *initial-sort*)
+   (from
+    :accessor from
+    :initarg :from
+    :initform *initial-from*)
+   (size
+    :accessor size
+    :initarg :size
+    :initform *initial-size*)
+   (match-all
+    :accessor match-all
+    :initarg :match-all
+    :initform *initial-match-all*)
+   (minimum-should-match
+    :accessor minimum-should-match
+    :initarg :minimum-should-match
+    :initform *initial-minimum-should-match*)))
 
-(defmethod set-query ((osqb opensearch-query-builder) new-query)
-  (setf (query osqb) new-query))
+;; Example class instance methods:
+;;
+;; (defmethod set-query ((osqb opensearch-query-builder) new-query)
+;;   (setf (query osqb) new-query))
 
-(defmethod to-json ((osqb opensearch-query-builder))
-  (json:encode-json-to-string
-   `(:query ,(query osqb) :index ,(index osqb) :type ,(type osqb))))
+;; (defmethod to-json ((osqb opensearch-query-builder))
+;;   (json:encode-json-to-string
+;;    `(:query ,(query osqb) :index ,(index osqb) :type ,(type osqb))))
 
 ;; Example usage:
 ;;

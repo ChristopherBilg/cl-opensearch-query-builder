@@ -4,7 +4,4 @@
 
 (defpackage :cl-opensearch-query-builder
   (:use :cl :asdf)
-  (:export
-    #:opensearch-query-builder
-    #:set-query
-    #:to-json))
+  (:export #:opensearch-query-builder))
