@@ -2,9 +2,9 @@
 
 (in-package :cl-opensearch-query-builder)
 
-(defparameter *initial-query* "")
-(defparameter *initial-index* "")
-(defparameter *initial-sort* "")
+(defparameter *initial-query* (make-hash-table))
+(defparameter *initial-filter* (make-hash-table))
+(defparameter *initial-sort* (make-hash-table))
 (defparameter *initial-from* 0)
 (defparameter *initial-size* 10)
 (defparameter *initial-match-all* t)
@@ -16,10 +16,10 @@
     :accessor query
     :initarg :query
     :initform *initial-query*)
-   (index
-    :accessor index
-    :initarg :index
-    :initform *initial-index*)
+   (filter
+    :accessor filter
+    :initarg :filter
+    :initform *initial-filter*)
    (sort
     :accessor sort
     :initarg :sort
@@ -41,23 +41,58 @@
     :initarg :minimum-should-match
     :initform *initial-minimum-should-match*)))
 
-;; Example class instance methods:
-;;
-;; (defmethod set-query ((osqb opensearch-query-builder) new-query)
-;;   (setf (query osqb) new-query))
+(defmethod initialize-instance :after ((osqb opensearch-query-builder) &key)
+  "Initialize the instance."
+  (setf (query osqb) *initial-query*)
+  (setf (sort osqb) *initial-sort*)
+  (setf (from osqb) *initial-from*)
+  (setf (size osqb) *initial-size*)
+  (setf (match-all osqb) *initial-match-all*)
+  (setf (minimum-should-match osqb) *initial-minimum-should-match*))
 
-;; (defmethod to-json ((osqb opensearch-query-builder))
-;;   (json:encode-json-to-string
-;;    `(:query ,(query osqb) :index ,(index osqb) :type ,(type osqb))))
+(defmethod add-query ((osqb opensearch-query-builder) field value)
+  "Add a query field to the query."
+  (setf (gethash field (query osqb)) value))
 
-;; Example usage:
-;;
-;; (defparameter *osqb* (make-instance 'opensearch-query-builder))
-;; (set-query *osqb* "foo")
-;; (to-json *osqb*)
+(defmethod add-filter ((osqb opensearch-query-builder) field value)
+  "Add a filter field to the query."
+  (setf (gethash field (filter osqb)) value))
 
-;; (let ((osqb (make-instance 'opensearch-query-builder)))
-;;   (set-query osqb "my query")
-;;   (set-index osqb "my index")
-;;   (set-type osqb "my type")
-;;   (to-json osqb))
+(defmethod add-sort ((osqb opensearch-query-builder) field order)
+  "Add a sort field to the query."
+  (setf (gethash field (sort osqb)) order))
+
+(defmethod set-from ((osqb opensearch-query-builder) new-from)
+  "Set the 'from' parameter of the query."
+  (setf (from osqb) new-from))
+
+(defmethod set-size ((osqb opensearch-query-builder) new-size)
+  "Set the 'size' parameter of the query."
+  (setf (size osqb) new-size))
+
+(defmethod toggle-match-all ((osqb opensearch-query-builder))
+  "Toggle the 'match_all' parameter of the query."
+  (setf (match-all osqb) (not (match-all osqb))))
+
+(defmethod set-minimum-should-match ((osqb opensearch-query-builder) new-minimum-should-match)
+  "Set the 'minimum_should_match' parameter of the query."
+  (setf (minimum-should-match osqb) new-minimum-should-match))
+
+(defmethod increment-minimum-should-match ((osqb opensearch-query-builder))
+  "Increment the 'minimum_should_match' parameter of the query."
+  (incf (minimum-should-match osqb)))
+
+(defmethod decrement-minimum-should-match ((osqb opensearch-query-builder))
+  "Decrement the 'minimum_should_match' parameter of the query."
+  (decf (minimum-should-match osqb)))
+
+(defmethod to-json ((osqb opensearch-query-builder))
+  "Return a JSON string representing the query."
+  (json:encode-json-to-string
+   `(:query ,(query osqb)
+     :filter ,(filter osqb)
+     :sort ,(sort osqb)
+     :from ,(from osqb)
+     :size ,(size osqb)
+     :match_all ,(match-all osqb)
+     :minimum_should_match ,(minimum-should-match osqb))))
