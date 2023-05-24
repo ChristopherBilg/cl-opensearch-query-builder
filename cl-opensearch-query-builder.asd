@@ -14,6 +14,7 @@
   :homepage "https://github.com/ChristopherBilg/cl-opensearch-query-builder"
   :source-control (:git "git@github.com:ChristopherBilg/cl-opensearch-query-builder.git")
   :bug-tracker "https://github.com/ChristopherBilg/cl-opensearch-query-builder/issues"
+  :depends-on (:cl-json)
   :pathname "src/"
   :components ((:file "package")
                (:file "cl-opensearch-query-builder")))

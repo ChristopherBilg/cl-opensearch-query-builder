@@ -9,7 +9,7 @@
     #:initialize-instance
     #:add-query
     #:add-filter
-    #:add-sort
+    #:add-sorted
     #:set-from
     #:set-size
     #:to-json))

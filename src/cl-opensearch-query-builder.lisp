@@ -4,14 +4,13 @@
 
 (defparameter *initial-query* (make-hash-table))
 (defparameter *initial-filter* (make-hash-table))
-(defparameter *initial-sort* (make-hash-table))
+(defparameter *initial-sorted* (make-hash-table))
 (defparameter *initial-from* 0)
 (defparameter *initial-size* 10)
 (defparameter *initial-match-all* t)
 (defparameter *initial-minimum-should-match* 0)
 
 (defclass opensearch-query-builder ()
-  "A class for building OpenSearch queries."
   ((query
     :accessor query
     :initarg :query
@@ -20,10 +19,10 @@
     :accessor filter
     :initarg :filter
     :initform *initial-filter*)
-   (sort
-    :accessor sort
-    :initarg :sort
-    :initform *initial-sort*)
+   (sorted
+    :accessor sorted
+    :initarg :sorted
+    :initform *initial-sorted*)
    (from
     :accessor from
     :initarg :from
@@ -44,7 +43,8 @@
 (defmethod initialize-instance :after ((osqb opensearch-query-builder) &key)
   "Initialize the instance."
   (setf (query osqb) *initial-query*)
-  (setf (sort osqb) *initial-sort*)
+  (setf (filter osqb) *initial-filter*)
+  (setf (sorted osqb) *initial-sorted*)
   (setf (from osqb) *initial-from*)
   (setf (size osqb) *initial-size*)
   (setf (match-all osqb) *initial-match-all*)
@@ -58,9 +58,9 @@
   "Add a filter field to the query."
   (setf (gethash field (filter osqb)) value))
 
-(defmethod add-sort ((osqb opensearch-query-builder) field order)
-  "Add a sort field to the query."
-  (setf (gethash field (sort osqb)) order))
+(defmethod add-sorted ((osqb opensearch-query-builder) field order)
+  "Add a sorted field to the query."
+  (setf (gethash field (sorted osqb)) order))
 
 (defmethod set-from ((osqb opensearch-query-builder) new-from)
   "Set the 'from' parameter of the query."
@@ -91,8 +91,20 @@
   (json:encode-json-to-string
    `(:query ,(query osqb)
      :filter ,(filter osqb)
-     :sort ,(sort osqb)
+     :sorted ,(sorted osqb)
      :from ,(from osqb)
      :size ,(size osqb)
      :match_all ,(match-all osqb)
      :minimum_should_match ,(minimum-should-match osqb))))
+
+;; Example usage:
+(defparameter *osqb* (make-instance 'opensearch-query-builder))
+;;
+(add-query *osqb* "title" "foo")
+(add-query *osqb* "description" "bar")
+(add-filter *osqb* "author" "baz")
+(add-sorted *osqb* "title" "asc")
+(add-sorted *osqb* "author" "desc")
+(set-from *osqb* 10)
+(set-size *osqb* 20)
+(to-json *osqb*)
