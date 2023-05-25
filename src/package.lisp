@@ -7,9 +7,6 @@
   (:export
     #:opensearch-query-builder
     #:initialize-instance
-    #:add-query
-    #:add-filter
-    #:add-sorted
     #:set-from
     #:set-size
-    #:to-json))
+    #:to-stringified-json))
