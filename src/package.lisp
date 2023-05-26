@@ -9,4 +9,9 @@
     #:initialize-instance
     #:set-from
     #:set-size
+    #:add-filter
+    #:add-sort-by
+    #:add-must-query
+    #:add-must-not-query
+    #:add-should-query
     #:to-stringified-json))
