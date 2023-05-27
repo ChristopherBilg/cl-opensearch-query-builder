@@ -72,10 +72,6 @@
   "Disable the 'match_all' parameter of the query."
   (setf (match-all osqb) nil))
 
-(defmethod enable-match-all ((osqb opensearch-query-builder))
-  "Enable the 'match_all' parameter of the query."
-  (setf (match-all osqb) t))
-
 (defmethod set-from ((osqb opensearch-query-builder) new-from)
   "Set the 'from' parameter of the query."
   (setf (from osqb) new-from))
@@ -112,20 +108,26 @@
   (push (list field value term) (should osqb)))
 
 (defmethod to-stringified-json ((osqb opensearch-query-builder))
-  "Return a cl-json JSON object representing the query using the cl-json package."
+  "Return a stringified JSON object representing the query."
   (let ((json (make-hash-table)))
     (setf (gethash "from" json) (from osqb))
     (setf (gethash "size" json) (size osqb))
-    (setf (gethash "match_all" json) (match-all osqb))
-    (setf (gethash "minimum_should_match" json) (minimum-should-match osqb))
-    (setf (gethash "filter" json) (filter osqb))
-    (setf (gethash "sort" json) (sort-by osqb))
-    (setf (gethash "must" json) (must osqb))
-    (setf (gethash "must_not" json) (must-not osqb))
-    (setf (gethash "should" json) (should osqb))
-    (cl-json:encode-json-to-string json)))
-
-;; Example usage:
-;;
-;; (defparameter *osqb* (make-instance 'opensearch-query-builder))
-;; (to-stringified-json *osqb*)
+    (when (match-all osqb)
+      (setf (gethash "match_all" json) (match-all osqb)))
+    (when (not (= (minimum-should-match osqb) 0))
+      (setf (gethash "minimum_should_match" json) (minimum-should-match osqb)))
+    (when (filter osqb)
+      (setf (gethash "filter" json)
+            (mapcar (lambda (filter)
+                      (let ((filter-hash (make-hash-table)))
+                        (setf (gethash (first filter) filter-hash) (second filter))
+                        filter-hash))
+                    (filter osqb))))
+    (when (sort-by osqb)
+      (setf (gethash "sort" json)
+            (mapcar (lambda (sort-by)
+                      (let ((sort-by-hash (make-hash-table)))
+                        (setf (gethash (first sort-by) sort-by-hash) (second sort-by))
+                        sort-by-hash))
+                    (sort-by osqb))))
+    (com.inuoe.jzon:stringify json)))
