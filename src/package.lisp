@@ -1,4 +1,4 @@
-;;;; package.lisp
+;;;; src/package.lisp
 
 (in-package :cl-user)
 

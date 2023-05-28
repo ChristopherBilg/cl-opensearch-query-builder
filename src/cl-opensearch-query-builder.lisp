@@ -1,4 +1,4 @@
-;;;; cl-opensearch-query-builder.lisp
+;;;; src/cl-opensearch-query-builder.lisp
 
 (in-package :cl-opensearch-query-builder)
 
