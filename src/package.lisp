@@ -7,10 +7,10 @@
   (:export
     #:opensearch-query-builder
     #:initialize-instance
-    #:set-from
-    #:set-size
-    #:add-filter
-    #:add-sort-by
+    #:set-pagination-from
+    #:set-pagination-size
+    #:add-filter-query
+    #:add-sort-by-query
     #:add-must-query
     #:add-must-not-query
     #:add-should-query
