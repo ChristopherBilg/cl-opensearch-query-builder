@@ -5,7 +5,7 @@
 (defsystem :cl-opensearch-query-builder
   :serial t
   :name "cl-opensearch-query-builder"
-  :version "0.0.8"
+  :version "0.0.9"
   :description "Common Lisp implementation of a builder for the OpenSearch query DSL"
   :long-description "Common Lisp implementation of a builder for the OpenSearch query DSL"
   :author "Christopher R. Bilger <christopherbilg@gmail.com>"
