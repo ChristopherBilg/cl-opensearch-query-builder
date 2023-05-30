@@ -107,19 +107,28 @@
             (+ (minimum-should-match osqb) increment-value)))
   (push (list field value term) (should osqb)))
 
+(defun append-hash-tables (target-hash-table source-hash-table)
+  (loop for key being the hash-keys of source-hash-table do
+    (let ((value (gethash key source-hash-table)))
+      (setf (gethash key target-hash-table) value)))
+  target-hash-table)
+
 (defmethod to-stringified-json ((osqb opensearch-query-builder))
   "Return a stringified JSON object representing the query."
   (let ((json (make-hash-table)))
     (setf (gethash "from" json) (from osqb))
     (setf (gethash "size" json) (size osqb))
+
     (when (match-all osqb)
       (setf (gethash "match_all" json) (match-all osqb)))
+
     (when (minimum-should-match osqb)
       (let ((bool-hash (make-hash-table))
             (minimum-should-match-hash (make-hash-table)))
         (setf (gethash "minimum_should_match" minimum-should-match-hash) (minimum-should-match osqb))
-        (setf (gethash "bool" bool-hash) minimum-should-match-hash)
-        (setf (gethash "query" json) bool-hash)))
+        (append-hash-tables bool-hash minimum-should-match-hash)
+        (append-hash-tables json bool-hash)))
+
     (when (filter osqb)
       (let ((bool-hash (make-hash-table))
             (filter-hash (make-hash-table))
@@ -132,8 +141,9 @@
                   (second filter-query))
             (push filter-query-hash filter-list)))
         (setf (gethash "filter" filter-hash) filter-list)
-        (setf (gethash "bool" bool-hash) filter-hash)
-        (setf (gethash "query" json) bool-hash)))
+        (append-hash-tables bool-hash filter-hash)
+        (append-hash-tables json bool-hash)))
+
     (when (sort-by osqb)
       (let ((bool-hash (make-hash-table))
             (sort-hash (make-hash-table))
@@ -146,8 +156,9 @@
                   (second sort-query))
             (push sort-query-hash sort-list)))
         (setf (gethash "sort" sort-hash) sort-list)
-        (setf (gethash "bool" bool-hash) sort-hash)
-        (setf (gethash "query" json) bool-hash)))
+        (append-hash-tables bool-hash sort-hash)
+        (append-hash-tables json bool-hash)))
+
     (when (must osqb)
       (let ((bool-hash (make-hash-table))
             (must-hash (make-hash-table))
@@ -160,8 +171,9 @@
                   (second must-query))
             (push must-query-hash must-list)))
         (setf (gethash "must" must-hash) must-list)
-        (setf (gethash "bool" bool-hash) must-hash)
-        (setf (gethash "query" json) bool-hash)))
+        (append-hash-tables bool-hash must-hash)
+        (append-hash-tables json bool-hash)))
+
     (when (must-not osqb)
       (let ((bool-hash (make-hash-table))
             (must-not-hash (make-hash-table))
@@ -174,8 +186,9 @@
                   (second must-not-query))
             (push must-not-query-hash must-not-list)))
         (setf (gethash "must_not" must-not-hash) must-not-list)
-        (setf (gethash "bool" bool-hash) must-not-hash)
-        (setf (gethash "query" json) bool-hash)))
+        (append-hash-tables bool-hash must-not-hash)
+        (append-hash-tables json bool-hash)))
+
     (when (should osqb)
       (let ((bool-hash (make-hash-table))
             (should-hash (make-hash-table))
@@ -188,6 +201,7 @@
                   (second should-query))
             (push should-query-hash should-list)))
         (setf (gethash "should" should-hash) should-list)
-        (setf (gethash "bool" bool-hash) should-hash)
-        (setf (gethash "query" json) bool-hash)))
+        (append-hash-tables bool-hash should-hash)
+        (append-hash-tables json bool-hash)))
+
     (com.inuoe.jzon:stringify json)))
