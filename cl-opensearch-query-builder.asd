@@ -4,7 +4,7 @@
 
 (defparameter *cl-opensearch-query-builder-serial* t)
 (defparameter *cl-opensearch-query-builder-name* "cl-opensearch-query-builder")
-(defparameter *cl-opensearch-query-builder-version* "0.0.10")
+(defparameter *cl-opensearch-query-builder-version* "0.0.11")
 (defparameter *cl-opensearch-query-builder-description* "Common Lisp implementation of a builder for the OpenSearch query DSL")
 (defparameter *cl-opensearch-query-builder-long-description* "Common Lisp implementation of a builder for the OpenSearch query DSL")
 (defparameter *cl-opensearch-query-builder-author* "Christopher R. Bilger <christopherbilg@gmail.com>")
