@@ -46,7 +46,7 @@
   :depends-on (
     :cl-opensearch-query-builder
     :fiveam)
-  :pathname "tests/"
+  :pathname "t/"
   :components ((:file "package")
                (:file "cl-opensearch-query-builder"))
   :perform (test-op :after (op c)
